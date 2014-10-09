@@ -14,24 +14,16 @@ var gutil = $.util;
 gulp.task('sass', function() {
 
     var sassFiles = gulp.src(constants.style.sass.src)
-    //.pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())
     .pipe(sass())
-    //.pipe(sourcemaps.write())
+    .pipe(sourcemaps.write())
     .on('error', function(err) {
         new gutil.PluginError('sass', err, {
             showStack: true
         });
     });
 
-    var cssFiles = gulp.src(constants.style.css.src)
-    //.pipe(sourcemaps.init())
-    //.pipe(concat('all.css'))
-    //.pipe(sourcemaps.write())
-    .on('error', function(err) {
-        new gutil.PluginError('css', err, {
-            showStack: true
-        });
-    });
+    var cssFiles = gulp.src(constants.style.css.src);
 
     return es.concat(cssFiles, sassFiles)
         .pipe(sourcemaps.init({
