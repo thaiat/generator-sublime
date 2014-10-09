@@ -156,8 +156,14 @@ var GulpsGenerator = yeoman.generators.Base.extend({
             if(this.style) {
                 this.template('tasks/style.js', 'gulp/tasks/style.js');
                 npmPackages = npmPackages.concat([
+                    'event-stream',
                     'gulp-sass',
-                    'gulp-sourcemaps'
+                    'gulp-sourcemaps',
+                    'gulp-autoprefixer',
+                    'gulp-minify-css',
+                    'gulp-rename',
+                    'gulp-concat',
+                    'gulp-size'
                 ]);
             }
 
