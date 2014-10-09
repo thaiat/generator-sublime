@@ -117,7 +117,7 @@ var GulpsGenerator = yeoman.generators.Base.extend({
                 this.template('tasks/browserify.js', 'gulp/tasks/browserify.js');
                 npmPackages = npmPackages.concat([
                     'vinyl-source-stream',
-                    'browserify#5.13.1',
+                    'browserify',
                     'watchify',
                     'chalk'
                 ]);
