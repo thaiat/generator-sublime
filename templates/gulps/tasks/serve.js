@@ -49,23 +49,25 @@ var taskBrowsersyncstart = function(constants) {
 
     //config.server.routes['/' + sourceMapDest + '/' + sourceMap] = sourceMapDest + '/' + sourceMap;
 
-    bs.watch(constants.style.watchFolder, {
-        ignoreInitial: true
-    }, function() {
-        gulp.start('style');
-    });
+    if (constants.moduleManager !== 'webpack') {
+        bs.watch(constants.style.watchFolder, {
+            ignoreInitial: true
+        }, function() {
+            gulp.start('style');
+        });
 
-    bs.watch(constants.html.src, {
-        ignoreInitial: true
-    }, function() {
-        gulp.start('html');
-    });
+        bs.watch(constants.html.src, {
+            ignoreInitial: true
+        }, function() {
+            gulp.start('html');
+        });
 
-    bs.watch(constants.images.src, {
-        ignoreInitial: true
-    }, function() {
-        gulp.start('image');
-    });
+        bs.watch(constants.images.src, {
+            ignoreInitial: true
+        }, function() {
+            gulp.start('image');
+        });
+    }
 
     bs.init(config);
 
@@ -81,7 +83,7 @@ var taskBrowsersyncstart = function(constants) {
 
 var taskBrowsersync = function(constants) {
     runSequence(
-        [constants.moduleManager === 'webpack' ? 'webpack:watch' : 'watchify', 'style', 'image', 'html', 'font', 'angular:i18n'],
+        constants.moduleManager === 'webpack' ? 'webpack:watch' : ['watchify', 'style', 'image', 'html', 'font', 'angular:i18n'],
         'browsersyncstart'
     );
 };

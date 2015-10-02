@@ -125,6 +125,11 @@ var GulpsGenerator = yeoman.generators.Base.extend({
             'less': '2.5.1',
             'less-loader': '2.2.1',
 
+            'style-loader': '0.12.4',
+            'css-loader': '0.19.0',
+            'file-loader': '0.8.4',
+            'url-loader': '0.5.6',
+
             'lodash': '3.10.1',
 
             'map-stream': '0.0.6',
@@ -209,6 +214,7 @@ var GulpsGenerator = yeoman.generators.Base.extend({
         this.pkgDest = pkgDest;
 
         this.clientFolder = this.options.clientFolder;
+        this.moduleManager = this.options.moduleManager;
         this.ionic = this.options.ionic;
         this.famous = this.options.famous;
         this.fontawesome = this.options.fontawesome;
@@ -418,16 +424,11 @@ var GulpsGenerator = yeoman.generators.Base.extend({
             if (this.webpack) {
                 this.template('tasks/webpack.js', gulpFolder + '/tasks/webpack.js');
                 npmPackages = npmPackages.concat([
-                    'babel',
-                    'babel-core',
                     'babel-loader',
-                    'babel-runtime',
-                    'brfs',
                     'webpack',
                     'webpack-dev-server',
                     'bundle-collapser',
                     'del',
-                    'envify',
                     'exorcist',
                     'html-loader',
                     'isparta',
@@ -435,11 +436,16 @@ var GulpsGenerator = yeoman.generators.Base.extend({
                     'istanbul-instrumenter-loader',
                     'karma-sourcemap-loader',
                     'karma-webpack',
+                    'brfs',
+                    'envify',
+                    'url-loader',
+                    'style-loader',
+                    'css-loader',
+                    'file-loader',
                     'less',
                     'less-loader',
                     'sass-loader',
                     'transform-loader',
-                    'jadeify',
                     'mkdirp',
                     'vinyl-buffer',
                     'vinyl-source-stream',
@@ -505,7 +511,7 @@ var GulpsGenerator = yeoman.generators.Base.extend({
                 ]);
             }
 
-            if (this.style || this.serve) {
+            if (this.style) {
                 this.template('tasks/style.js', gulpFolder + '/tasks/style.js');
                 npmPackages = npmPackages.concat([
                     'event-stream',

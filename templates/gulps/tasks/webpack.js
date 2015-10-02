@@ -52,8 +52,10 @@ var webpackShare = function(shouldWatch, constants, done) {
             }), gutil.noop()))
             .pipe(gulp.dest(dest))
             .on('end', function() {
-                if (done) {
+                // make sure to only call done once (in case we're in watch mode)
+                if (done && !done.called) {
                     done();
+                    done.called = true;
                 }
             });
 
@@ -111,8 +113,8 @@ var taskWebpackRun = function(constants, done) {
     webpackShare(false, constants, done);
 };
 
-var taskWebpackWatch = function(constants) {
-    webpackShare(true, constants);
+var taskWebpackWatch = function(constants, done) {
+    webpackShare(true, constants, done);
 };
 
 gulp.task('webpack:run', 'Generates a bundle javascript file with webpack run.', function(done) {
@@ -125,12 +127,12 @@ gulp.task('webpack:run', 'Generates a bundle javascript file with webpack run.',
 
 });
 
-gulp.task('webpack:watch', 'Generates a bundle javascript file with webpack watch.', function() {
+gulp.task('webpack:watch', 'Generates a bundle javascript file with webpack watch.', function(done) {
     var taskname = 'webpack:watch';
     gmux.targets.setClientFolder(constants.clientFolder);
     if (global.options === null) {
         global.options = gmux.targets.askForSingleTarget(taskname);
     }
-    return gmux.createAndRunTasks(gulp, taskWebpackWatch, taskname, global.options.target, global.options.mode, constants);
+    return gmux.createAndRunTasks(gulp, taskWebpackWatch, taskname, global.options.target, global.options.mode, constants, done);
 
 });
