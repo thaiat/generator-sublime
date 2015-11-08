@@ -55,7 +55,7 @@ var SublimeGenerator = Class.extend({
             defaults: true
         });
 
-        this.appnameFolder = _.slugify(this.appname);
+        this.appnameFolder = _.snakeCase(this.appname);
         this.travisOptions = travisOptions;
     },
 
@@ -66,7 +66,8 @@ var SublimeGenerator = Class.extend({
 
         var pkgDest = {};
         try {
-            pkgDest = this.dest.readJSON('package.json');
+            pkgDest = this.readJsonFile(this.destinationPath('package.json'));
+
         } catch (e) {}
 
         this.pkgDest = pkgDest;
@@ -100,7 +101,7 @@ var SublimeGenerator = Class.extend({
             var choices = this.allFiles.map(function(file) {
                 return {
                     name: file === '.settings' ? '.settings (codio)' : file,
-                    value: this._.classify(file),
+                    value: _.capitalize(_.camelCase(file)),
                     checked: true
                 };
             }.bind(this));
@@ -248,7 +249,7 @@ var SublimeGenerator = Class.extend({
             }
             if (this.TravisYml) {
                 var nodeVersion = this.options.nodeVersion;
-                this.shortNodeVersion = _.first(nodeVersion.split('.'), 2).join('.');
+                this.shortNodeVersion = _.take(nodeVersion.split('.'), 2).join('.');
                 this.template('_travis.yml', '.travis.yml');
                 this.template('_codeclimate.yml', '.codeclimate.yml');
             }
@@ -269,8 +270,6 @@ var SublimeGenerator = Class.extend({
     end: function() {
         this.log('');
         this.log(chalk.green('Woot generator-sublime:app!') + ' It appears that everything installed correctly.');
-        //this.log('Run the command ' + chalk.yellow('yo sublime:bash path/to/bashfile.sh') + ' to create a new bash file.');
-        //this.log('Run the command ' + chalk.yellow('yo sublime:gulps') + ' to scaffold gulp tasks.');
     }
 
 });

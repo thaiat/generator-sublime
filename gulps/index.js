@@ -201,7 +201,7 @@ var GulpsGenerator = yeoman.generators.Base.extend({
         }.bind(this));
 
         this.appname = this.appname || path.basename(process.cwd());
-        this.appname = this._.slugify(this._.humanize(this.appname));
+        this.appname = _.snakeCase(this.appname);
     },
 
     initializing: function() {
@@ -210,7 +210,8 @@ var GulpsGenerator = yeoman.generators.Base.extend({
 
         var pkgDest = {};
         try {
-            pkgDest = this.dest.readJSON('package.json');
+            pkgDest = this.readJsonFile(this.destinationPath('package.json'));
+
         } catch (e) {}
 
         this.pkgDest = pkgDest;
@@ -598,7 +599,7 @@ var GulpsGenerator = yeoman.generators.Base.extend({
             return packageString.indexOf('browser-sync') >= 0 || packageString.indexOf('webpack-dev-server') >= 0 || packageString.indexOf('karma') >= 0;
         };
         var socketIoPackages = _.remove(packagesToInstall, requiresSocketIo);
-
+debugger;
         this.npmInstall(packagesToInstall, {
             'saveDev': true,
             'saveExact': true
@@ -614,31 +615,6 @@ var GulpsGenerator = yeoman.generators.Base.extend({
     end: function() {
         this.log('');
         this.log(chalk.green('Woot generator-sublime:gulps!') + ' It appears that everything installed correctly.');
-        // if (this.lint) {
-        //     this.log('Run the command ' + chalk.yellow('gulp lint') + ' to lint your files.');
-        // }
-        // if (this.serve) {
-        //     //this.log('Run the command ' + chalk.yellow('gulp serve') + ' to launch a live reload server.');
-        //     this.log('Run the command ' + chalk.yellow('gulp browsersync') + ' to launch a browsersync server.');
-        // }
-        // if (this.browserify) {
-        //     this.log('Run the command ' + chalk.yellow('gulp browserify') + ' to create a browserify bundle.');
-        // }
-        // if (this.release) {
-        //     this.log('Run the command ' + chalk.yellow('gulp release') + ' to increment version and publish to npm.');
-        // }
-        // if (this.changelog) {
-        //     this.log('Run the command ' + chalk.yellow('gulp changelog') + ' to create a CHANGELOG.md file.');
-        // }
-        // if (this.test) {
-        //     this.log('Run the command ' + chalk.yellow('gulp test') + ' to run the tests.');
-        // }
-        // if (this.dist) {
-        //     this.log('Run the command ' + chalk.yellow('gulp dist') + ' to distribute the application.');
-        // }
-        // if (this.style) {
-        //     this.log('Run the command ' + chalk.yellow('gulp style') + ' to compile style files.');
-        // }
     }
 
 });

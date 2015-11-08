@@ -1,7 +1,6 @@
 'use strict';
 var path = require('path');
 var helpers = require('yeoman-generator').test;
-var mockery = require('mockery');
 var testHelper = require('./testHelper')();
 var _ = require('lodash');
 var os = require('os');
@@ -25,7 +24,7 @@ var allFiles = [
 
 var createOptionsFromFiles = function(_, files) {
     var options = files.map(function(file) {
-        return _.classify(file);
+        return _.capitalize(_.camelCase(file));
     });
     return options;
 };
@@ -44,7 +43,7 @@ var projectFiles = function(done, expectedFiles, prompts) {
         githubUser: testHelper.githubUserMock.user
     });
 
-    this.runGen.withPrompt(prompts)
+    this.runGen.withPrompts(prompts)
         .on('end', function() {
             assert.file(expectedFiles);
             var noFiles = allFiles.filter(function(file) {
@@ -59,13 +58,14 @@ var projectFiles = function(done, expectedFiles, prompts) {
 describe('sublime:app', function() {
 
     var defaultOptions;
-
+    var mockery;
     before(function() {
-        testHelper.startMock(mockery);
+        mockery = testHelper.startMock();
         mockery.registerMock('github', testHelper.githubMock);
         mockery.registerMock('child_process', testHelper.childProcessMock);
         mockery.registerMock('npm', testHelper.npmMock);
         mockery.registerMock('update-notifier', testHelper.updateNotifierMock.bind(this, false));
+        mockery.registerMock('yosay', testHelper.yosayMock);
     });
 
     beforeEach(function(done) {
@@ -88,13 +88,11 @@ describe('sublime:app', function() {
     });
 
     it('with option skip-welcome-message false should display welcome message', function(done) {
-        var yosay = sinon.spy();
-        mockery.registerMock('yosay', yosay);
 
         this.runGen.withOptions({
             'skip-welcome-message': false
         }).on('end', function() {
-            assert(yosay.calledWith('Welcome to the marvelous Sublime generator!'), 'yosay was not called with welcome message');
+            assert(testHelper.yosayMock.calledWith('Welcome to the marvelous Sublime generator!'), 'yosay was not called with welcome message');
             done();
         });
     });
@@ -194,7 +192,7 @@ describe('sublime:app', function() {
 
         var indent = 12;
         var options = createOptionsFromFiles(_, allFiles);
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
                 'Files': options,
                 'Indent': indent
             })
@@ -221,7 +219,7 @@ describe('sublime:app', function() {
     });
 
     it('with CodioStartup answser true should create startup.sh file', function(done) {
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
             'CodioStartup': true
         }).on('end', function() {
             assert.file('startup.sh');
@@ -237,7 +235,7 @@ describe('sublime:app', function() {
             .withOptions({
                 nodeVersion: nodeVersion
             })
-            .withPrompt({
+            .withPrompts({
                 'CodioStartup': true
             }).on('end', function() {
 
@@ -250,7 +248,7 @@ describe('sublime:app', function() {
 
     it('with CodioStartup answser false should not create startup.sh file', function(done) {
 
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
             'CodioStartup': false
         }).on('end', function() {
             assert.noFile('startup.sh');
@@ -261,7 +259,7 @@ describe('sublime:app', function() {
 
     it('with Gitconfig answser true should create git-config.sh and validate-commit-msg.js file', function(done) {
 
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
             'Gitconfig': true
         }).on('end', function() {
             assert.file('bin/git-config.sh');
@@ -272,7 +270,7 @@ describe('sublime:app', function() {
 
     it('with Gitconfig answser false should not create git-config.sh and validate-commit-msg.js file', function(done) {
 
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
             'Gitconfig': false
         }).on('end', function() {
             assert.noFile('bin/git-config.sh');
@@ -283,7 +281,7 @@ describe('sublime:app', function() {
 
     it('with CodioStartup and Gitconfig answser true should reference git-config.sh from startup.sh', function(done) {
 
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
             'CodioStartup': true,
             'Gitconfig': true
         }).on('end', function() {
@@ -296,7 +294,7 @@ describe('sublime:app', function() {
 
     it('with CodioStartup answser true and Gitconfig anwser false should not reference git-config.sh from startup.sh', function(done) {
 
-        this.runGen.withPrompt({
+        this.runGen.withPrompts({
             'CodioStartup': true,
             'Gitconfig': false
         }).on('end', function() {
