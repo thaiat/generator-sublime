@@ -1,7 +1,6 @@
 'use strict';
 var path = require('path');
 var helpers = require('yeoman-generator').test;
-var mockery = require('mockery');
 var testHelper = require('./testHelper')();
 var os = require('os');
 
@@ -12,14 +11,13 @@ describe('sublime:app notifier', function() {
     var defaultOptions;
     var notifierCallback;
     var exitCallback;
+    var mockery;
     before(function() {
 
         //shell = sinon.mock(require('shelljs'), 'exit');
-
         notifierCallback = sinon.spy();
         exitCallback = sinon.spy();
-        testHelper.endMock(mockery);
-        testHelper.startMock(mockery);
+        mockery = testHelper.startMock();
         mockery.registerMock('github', testHelper.githubMock);
         mockery.registerMock('child_process', testHelper.childProcessMock);
         mockery.registerMock('npm', testHelper.npmMock);

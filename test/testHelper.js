@@ -6,6 +6,7 @@ var os = require('os');
 var stripJsonComments = require('strip-json-comments');
 var generators = require('yeoman-generator');
 var helpers = require('yeoman-generator').test;
+global.sinon = require('sinon');
 
 module.exports = function() {
     var readTextFile = function(filename) {
@@ -36,6 +37,8 @@ module.exports = function() {
             }
         };
     };
+
+    var yosayMock = sinon.spy();
 
     var childProcessMock = {
 
@@ -86,12 +89,18 @@ module.exports = function() {
         mockery.deregisterAll();
     };
 
-    var startMock = function(mockery) {
+    var startMock = function() {
+        delete require.cache[require.resolve('mockery')];
+        console.log('XXX', require.resolve('mockery'), require.cache[require.resolve('mockery')])
+        
+        var mockery = require('mockery');
         endMock(mockery);
         mockery.enable({
             warnOnUnregistered: false,
-            useCleanCache: true
+            useCleanCache: false
         });
+        mockery.resetCache();
+        return mockery;
     };
 
     /**
@@ -122,6 +131,7 @@ module.exports = function() {
         githubMock: githubMock,
         childProcessMock: childProcessMock,
         npmMock: npmMock,
+        yosayMock: yosayMock,
         updateNotifierMock: updateNotifierMock,
         shelljsMock: shelljsMock,
         startMock: startMock,
